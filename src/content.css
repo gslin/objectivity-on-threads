@@ -1,0 +1,26 @@
+.objectivity-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  color: rgb(119, 119, 119);
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.objectivity-btn:hover {
+  background-color: rgba(119, 119, 119, 0.1);
+  color: rgb(0, 149, 246);
+}
+
+.objectivity-btn:active {
+  transform: scale(0.92);
+}
+
+.objectivity-btn svg {
+  pointer-events: none;
+}
