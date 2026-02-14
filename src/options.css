@@ -88,6 +88,32 @@ button {
   background: #ddd;
 }
 
+fieldset {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+}
+
+legend {
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 0 4px;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 400;
+  margin: 8px 0;
+  cursor: pointer;
+}
+
+.radio-label input[type="radio"] {
+  margin: 0;
+}
+
 .status {
   margin-top: 12px;
   padding: 8px 12px;

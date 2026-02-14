@@ -6,19 +6,30 @@ const DEFAULT_PROMPT = `請詳細逐句分析以下的內容正確性。
 
 「{post_content}」`;
 
-let currentPrompt = DEFAULT_PROMPT;
+const DEFAULT_PROVIDER = "chatgpt";
 
-// Load custom prompt from storage
-chrome.storage.sync.get("prompt", (result) => {
+let currentPrompt = DEFAULT_PROMPT;
+let currentProvider = DEFAULT_PROVIDER;
+
+// Load settings from storage
+chrome.storage.sync.get(["prompt", "provider"], (result) => {
   if (result.prompt) {
     currentPrompt = result.prompt;
   }
+  if (result.provider) {
+    currentProvider = result.provider;
+  }
 });
 
-// Listen for prompt changes in real time
+// Listen for setting changes in real time
 chrome.storage.onChanged.addListener((changes, area) => {
-  if (area === "sync" && changes.prompt) {
-    currentPrompt = changes.prompt.newValue ?? DEFAULT_PROMPT;
+  if (area === "sync") {
+    if (changes.prompt) {
+      currentPrompt = changes.prompt.newValue ?? DEFAULT_PROMPT;
+    }
+    if (changes.provider) {
+      currentProvider = changes.provider.newValue ?? DEFAULT_PROVIDER;
+    }
   }
 });
 
@@ -85,11 +96,26 @@ function createAnalysisButton() {
 }
 
 /**
- * Open ChatGPT temporary chat with the analysis prompt.
+ * Build the analysis URL based on the selected provider.
  */
-function openChatGPTAnalysis(postText) {
+function buildAnalysisUrl(postText) {
   const prompt = currentPrompt.replace("{post_content}", postText);
-  const url = `https://chatgpt.com/?temporary-chat=true&q=${encodeURIComponent(prompt)}`;
+  const encoded = encodeURIComponent(prompt);
+
+  switch (currentProvider) {
+    case "claude":
+      return `https://claude.ai/new?q=${encoded}&incognito=true`;
+    case "chatgpt":
+    default:
+      return `https://chatgpt.com/?temporary-chat=true&q=${encoded}`;
+  }
+}
+
+/**
+ * Open the selected AI provider with the analysis prompt.
+ */
+function openAnalysis(postText) {
+  const url = buildAnalysisUrl(postText);
   window.open(url, "_blank");
 }
 
@@ -115,7 +141,7 @@ function processPost(postEl) {
       return;
     }
 
-    openChatGPTAnalysis(text.trim());
+    openAnalysis(text.trim());
   });
 
   // The More button (div[role="button"]) sits inside a wrapper div.
