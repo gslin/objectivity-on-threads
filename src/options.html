@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <title>Objectivity on Threads - Settings</title>
+    <link rel="stylesheet" href="options.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Objectivity on Threads</h1>
+
+      <label for="prompt">
+        Analysis prompt
+        <span class="hint"
+          >Use <code>{post_content}</code> as a placeholder for the post
+          text.</span
+        >
+      </label>
+      <textarea id="prompt" rows="10"></textarea>
+
+      <div class="actions">
+        <button id="save" type="button">Save</button>
+        <button id="reset" type="button" class="secondary">
+          Reset to default
+        </button>
+      </div>
+
+      <div id="status" class="status" hidden>Saved.</div>
+    </div>
+
+    <script src="options.js"></script>
+  </body>
+</html>

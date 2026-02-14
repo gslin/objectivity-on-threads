@@ -3,6 +3,11 @@
   "name": "Objectivity on Threads",
   "version": "1.0.0",
   "description": "Analyze the objectivity of Threads posts using ChatGPT",
+  "permissions": ["storage"],
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
   "content_scripts": [
     {
       "matches": ["*://www.threads.com/*"],

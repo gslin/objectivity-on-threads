@@ -2,7 +2,7 @@
 
 const BUTTON_MARKER = "data-objectivity-injected";
 
-const PROMPT_TEMPLATE = `請逐字分析以下 Threads 貼文的客觀性。請指出：
+const DEFAULT_PROMPT = `請逐字分析以下 Threads 貼文的客觀性。請指出：
 1. 主觀用語與情緒性字詞
 2. 可能的偏見或立場傾向
 3. 事實陳述 vs 個人觀點
@@ -10,6 +10,22 @@ const PROMPT_TEMPLATE = `請逐字分析以下 Threads 貼文的客觀性。請�
 
 貼文內容：
 「{post_content}」`;
+
+let currentPrompt = DEFAULT_PROMPT;
+
+// Load custom prompt from storage
+chrome.storage.sync.get("prompt", (result) => {
+  if (result.prompt) {
+    currentPrompt = result.prompt;
+  }
+});
+
+// Listen for prompt changes in real time
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area === "sync" && changes.prompt) {
+    currentPrompt = changes.prompt.newValue ?? DEFAULT_PROMPT;
+  }
+});
 
 /**
  * Find the post-level three-dot "More" button inside a post element.
@@ -77,7 +93,7 @@ function createAnalysisButton() {
  * Open ChatGPT temporary chat with the analysis prompt.
  */
 function openChatGPTAnalysis(postText) {
-  const prompt = PROMPT_TEMPLATE.replace("{post_content}", postText);
+  const prompt = currentPrompt.replace("{post_content}", postText);
   const url = `https://chatgpt.com/?temporary-chat=true&q=${encodeURIComponent(prompt)}`;
   window.open(url, "_blank");
 }
