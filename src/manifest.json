@@ -4,6 +4,10 @@
   "version": "1.0.0",
   "description": "Analyze the objectivity of Threads posts using ChatGPT",
   "permissions": ["storage"],
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "action": {},
   "options_ui": {
     "page": "options.html",
     "open_in_tab": true
