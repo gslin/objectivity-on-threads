@@ -59,13 +59,18 @@ function findMoreButton(postEl) {
  */
 function extractPostText(postEl) {
   // Threads post text lives inside span[dir="auto"] elements.
-  // Collect all of them, then filter out short metadata (timestamps, usernames).
   const allSpans = postEl.querySelectorAll('span[dir="auto"]');
   if (allSpans.length > 0) {
     const texts = Array.from(allSpans)
+      // Skip username spans (they have translate="no")
+      .filter((n) => !n.hasAttribute("translate"))
       .map((n) => n.textContent.trim())
+      .filter((t) => t.length > 0)
+      // The "Translate" button is nested inside span[dir="auto"],
+      // so its text leaks into textContent — strip it from the end.
+      .map((t) => t.replace(/\s*Translate$/, "").trim())
       .filter((t) => t.length > 0);
-    // Filter out short items that are likely metadata (timestamps like "1h", usernames)
+    // Filter out short items that are likely metadata (timestamps like "1h")
     const bodyTexts = texts.filter((t) => t.length > 3 || texts.length <= 2);
     if (bodyTexts.length > 0) {
       return bodyTexts.join("\n");
