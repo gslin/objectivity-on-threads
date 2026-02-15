@@ -18,6 +18,14 @@
       "js": ["content.js"],
       "css": ["content.css"],
       "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "*://chatgpt.com/*",
+        "*://claude.ai/*"
+      ],
+      "js": ["autosubmit.js"],
+      "run_at": "document_idle"
     }
   ],
   "icons": {
