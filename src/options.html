@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="zh-Hant">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <title>Objectivity on Threads - Settings</title>
@@ -7,35 +7,46 @@
   </head>
   <body>
     <div class="container">
-      <h1>Objectivity on Threads</h1>
+      <div class="header">
+        <h1>Objectivity on Threads</h1>
+        <select id="language">
+          <option value="auto" data-i18n="lang_auto">Auto-detect</option>
+          <option value="en">English</option>
+          <option value="zh-TW">繁體中文（台灣）</option>
+          <option value="zh-HK">繁體中文（香港）</option>
+          <option value="ja">日本語</option>
+        </select>
+      </div>
 
       <fieldset id="provider-group">
-        <legend>AI Provider</legend>
+        <legend data-i18n="provider_legend">AI Provider</legend>
         <label class="radio-label">
           <input type="radio" name="provider" value="chatgpt" />
-          ChatGPT (temporary chat)
+          <span data-i18n="provider_chatgpt">ChatGPT (temporary chat)</span>
         </label>
         <label class="radio-label">
           <input type="radio" name="provider" value="claude" />
-          Claude (incognito)
+          <span data-i18n="provider_claude">Claude (incognito)</span>
         </label>
       </fieldset>
 
       <fieldset id="icon-action-group">
-        <legend>Toolbar icon behavior</legend>
+        <legend data-i18n="icon_action_legend">Analysis button behavior</legend>
         <label class="radio-label">
           <input type="radio" name="iconAction" value="menu" />
-          Show menu to choose AI
+          <span data-i18n="icon_action_menu">Show menu to choose AI</span>
         </label>
         <label class="radio-label">
           <input type="radio" name="iconAction" value="direct" />
-          Open default AI directly
+          <span data-i18n="icon_action_direct"
+            >Open default AI directly</span
+          >
         </label>
       </fieldset>
 
       <label for="prompt">
-        Analysis prompt
-        <span class="hint"
+        <span data-i18n="prompt_label">Analysis prompt</span>
+        <span class="hint" data-i18n-html="prompt_hint"
           >Use <code>{post_content}</code> as a placeholder for the post
           text.</span
         >
@@ -43,8 +54,8 @@
       <textarea id="prompt" rows="10"></textarea>
 
       <div class="actions">
-        <button id="save" type="button">Save</button>
-        <button id="reset" type="button" class="secondary">
+        <button id="save" type="button" data-i18n="save">Save</button>
+        <button id="reset" type="button" class="secondary" data-i18n="reset">
           Reset to default
         </button>
       </div>

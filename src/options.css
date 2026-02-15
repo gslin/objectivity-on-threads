@@ -20,9 +20,25 @@ body {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 }
 
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
 h1 {
   font-size: 1.25rem;
-  margin-bottom: 24px;
+}
+
+#language {
+  padding: 4px 8px;
+  font-size: 0.85rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  color: #222;
+  cursor: pointer;
 }
 
 label {
