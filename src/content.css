@@ -24,3 +24,24 @@
 .objectivity-btn svg {
   pointer-events: none;
 }
+
+.objectivity-dropdown {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  min-width: 120px;
+}
+
+.objectivity-dropdown-item {
+  padding: 8px 16px;
+  font-size: 14px;
+  color: #222;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.objectivity-dropdown-item:hover {
+  background: #f0f0f0;
+}

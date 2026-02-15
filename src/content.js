@@ -7,17 +7,22 @@ const DEFAULT_PROMPT = `請搜尋網路上的資訊，詳細逐句分析從 Thre
 「{post_content}」`;
 
 const DEFAULT_PROVIDER = "chatgpt";
+const DEFAULT_ICON_ACTION = "menu";
 
 let currentPrompt = DEFAULT_PROMPT;
 let currentProvider = DEFAULT_PROVIDER;
+let currentIconAction = DEFAULT_ICON_ACTION;
 
 // Load settings from storage
-chrome.storage.sync.get(["prompt", "provider"], (result) => {
+chrome.storage.sync.get(["prompt", "provider", "iconAction"], (result) => {
   if (result.prompt) {
     currentPrompt = result.prompt;
   }
   if (result.provider) {
     currentProvider = result.provider;
+  }
+  if (result.iconAction) {
+    currentIconAction = result.iconAction;
   }
 });
 
@@ -29,6 +34,9 @@ chrome.storage.onChanged.addListener((changes, area) => {
     }
     if (changes.provider) {
       currentProvider = changes.provider.newValue ?? DEFAULT_PROVIDER;
+    }
+    if (changes.iconAction) {
+      currentIconAction = changes.iconAction.newValue ?? DEFAULT_ICON_ACTION;
     }
   }
 });
@@ -101,13 +109,13 @@ function createAnalysisButton() {
 }
 
 /**
- * Build the analysis URL based on the selected provider.
+ * Build the analysis URL for a given provider.
  */
-function buildAnalysisUrl(postText) {
+function buildAnalysisUrl(postText, provider) {
   const prompt = currentPrompt.replace("{post_content}", postText);
   const encoded = encodeURIComponent(prompt);
 
-  switch (currentProvider) {
+  switch (provider) {
     case "claude":
       return `https://claude.ai/new?q=${encoded}&incognito=true`;
     case "chatgpt":
@@ -117,11 +125,60 @@ function buildAnalysisUrl(postText) {
 }
 
 /**
- * Open the selected AI provider with the analysis prompt.
+ * Open an AI provider with the analysis prompt.
  */
-function openAnalysis(postText) {
-  const url = buildAnalysisUrl(postText);
+function openAnalysis(postText, provider) {
+  const url = buildAnalysisUrl(postText, provider);
   window.open(url, "_blank");
+}
+
+/**
+ * Close any open objectivity dropdown menu.
+ */
+function closeDropdown() {
+  const existing = document.querySelector(".objectivity-dropdown");
+  if (existing) existing.remove();
+}
+
+/**
+ * Show a dropdown menu to choose the AI provider.
+ */
+function showDropdown(anchorEl, postText) {
+  closeDropdown();
+
+  const menu = document.createElement("div");
+  menu.className = "objectivity-dropdown";
+
+  const items = [
+    { label: "ChatGPT", provider: "chatgpt" },
+    { label: "Claude", provider: "claude" },
+  ];
+
+  for (const item of items) {
+    const btn = document.createElement("div");
+    btn.className = "objectivity-dropdown-item";
+    btn.textContent = item.label;
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      closeDropdown();
+      openAnalysis(postText, item.provider);
+    });
+    menu.appendChild(btn);
+  }
+
+  // Position relative to the anchor button
+  anchorEl.style.position = "relative";
+  menu.style.position = "absolute";
+  menu.style.top = "100%";
+  menu.style.right = "0";
+  menu.style.zIndex = "9999";
+  anchorEl.appendChild(menu);
+
+  // Close when clicking outside
+  setTimeout(() => {
+    document.addEventListener("click", closeDropdown, { once: true });
+  }, 0);
 }
 
 /**
@@ -146,7 +203,13 @@ function processPost(postEl) {
       return;
     }
 
-    openAnalysis(text.trim());
+    const trimmed = text.trim();
+
+    if (currentIconAction === "menu") {
+      showDropdown(btn, trimmed);
+    } else {
+      openAnalysis(trimmed, currentProvider);
+    }
   });
 
   // The More button (div[role="button"]) sits inside a wrapper div.
