@@ -2,7 +2,7 @@
 
 const BUTTON_MARKER = "data-objectivity-injected";
 
-const DEFAULT_PROMPT = `請詳細逐句分析以下的內容正確性。
+const DEFAULT_PROMPT = `請搜尋網路上的資訊，詳細逐句分析以下的內容。
 
 「{post_content}」`;
 
