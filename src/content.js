@@ -93,18 +93,57 @@ function extractPostText(postEl) {
  * Create the analysis button element.
  */
 function createAnalysisButton() {
+  const NS = "http://www.w3.org/2000/svg";
+
+  const svg = document.createElementNS(NS, "svg");
+  svg.setAttribute("viewBox", "0 0 24 24");
+  svg.setAttribute("fill", "none");
+  svg.setAttribute("stroke", "currentColor");
+  svg.setAttribute("stroke-width", "2");
+  svg.setAttribute("stroke-linecap", "round");
+  svg.setAttribute("stroke-linejoin", "round");
+  svg.setAttribute("width", "20");
+  svg.setAttribute("height", "20");
+  svg.style.setProperty("--x-height", "20px");
+  svg.style.setProperty("--x-width", "20px");
+
+  const circle = document.createElementNS(NS, "circle");
+  circle.setAttribute("cx", "11");
+  circle.setAttribute("cy", "11");
+  circle.setAttribute("r", "8");
+  svg.appendChild(circle);
+
+  const line1 = document.createElementNS(NS, "line");
+  line1.setAttribute("x1", "21");
+  line1.setAttribute("y1", "21");
+  line1.setAttribute("x2", "16.65");
+  line1.setAttribute("y2", "16.65");
+  svg.appendChild(line1);
+
+  const line2 = document.createElementNS(NS, "line");
+  line2.setAttribute("x1", "8");
+  line2.setAttribute("y1", "11");
+  line2.setAttribute("x2", "14");
+  line2.setAttribute("y2", "11");
+  svg.appendChild(line2);
+
+  const line3 = document.createElementNS(NS, "line");
+  line3.setAttribute("x1", "11");
+  line3.setAttribute("y1", "8");
+  line3.setAttribute("x2", "11");
+  line3.setAttribute("y2", "14");
+  svg.appendChild(line3);
+
+  const inner = document.createElement("div");
+  inner.appendChild(svg);
+
   const btn = document.createElement("div");
   btn.className = "objectivity-btn";
   btn.setAttribute("role", "button");
   btn.setAttribute("tabindex", "0");
   btn.setAttribute("aria-label", "分析客觀性");
   btn.title = "分析客觀性";
-  btn.innerHTML = `<div><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="--x-height: 20px; --x-width: 20px;" width="20" height="20">
-    <circle cx="11" cy="11" r="8"/>
-    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-    <line x1="8" y1="11" x2="14" y2="11"/>
-    <line x1="11" y1="8" x2="11" y2="14"/>
-  </svg></div>`;
+  btn.appendChild(inner);
   return btn;
 }
 

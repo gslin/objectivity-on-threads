@@ -12,8 +12,8 @@ const MESSAGES = {
     icon_action_menu: "Show menu to choose AI",
     icon_action_direct: "Open default AI directly",
     prompt_label: "Analysis prompt",
-    prompt_hint:
-      'Use <code>{post_content}</code> as a placeholder for the post text.',
+    prompt_hint_before: "Use ",
+    prompt_hint_after: " as a placeholder for the post text.",
     save: "Save",
     reset: "Reset to default",
     saved: "Saved.",
@@ -28,8 +28,8 @@ const MESSAGES = {
     icon_action_menu: "顯示選單選擇 AI",
     icon_action_direct: "直接開啟預設 AI",
     prompt_label: "分析提示詞",
-    prompt_hint:
-      '使用 <code>{post_content}</code> 作為貼文內容的佔位符。',
+    prompt_hint_before: "使用 ",
+    prompt_hint_after: " 作為貼文內容的佔位符。",
     save: "儲存",
     reset: "恢復預設",
     saved: "已儲存。",
@@ -44,8 +44,8 @@ const MESSAGES = {
     icon_action_menu: "顯示選單揀選 AI",
     icon_action_direct: "直接開啟預設 AI",
     prompt_label: "分析提示詞",
-    prompt_hint:
-      '使用 <code>{post_content}</code> 作為帖文內容嘅佔位符。',
+    prompt_hint_before: "使用 ",
+    prompt_hint_after: " 作為帖文內容嘅佔位符。",
     save: "儲存",
     reset: "恢復預設",
     saved: "已儲存。",
@@ -60,8 +60,8 @@ const MESSAGES = {
     icon_action_menu: "AI を選択するメニューを表示",
     icon_action_direct: "デフォルトの AI を直接開く",
     prompt_label: "分析プロンプト",
-    prompt_hint:
-      '<code>{post_content}</code> を投稿テキストのプレースホルダーとして使用します。',
+    prompt_hint_before: "",
+    prompt_hint_after: " を投稿テキストのプレースホルダーとして使用します。",
     save: "保存",
     reset: "デフォルトに戻す",
     saved: "保存しました。",
@@ -90,8 +90,16 @@ function applyI18n() {
   for (const el of document.querySelectorAll("[data-i18n]")) {
     el.textContent = t(el.getAttribute("data-i18n"));
   }
-  for (const el of document.querySelectorAll("[data-i18n-html]")) {
-    el.innerHTML = t(el.getAttribute("data-i18n-html"));
+
+  // Build prompt hint with a <code> element (no innerHTML)
+  const hintEl = document.getElementById("prompt-hint");
+  if (hintEl) {
+    hintEl.textContent = "";
+    hintEl.appendChild(document.createTextNode(t("prompt_hint_before")));
+    const code = document.createElement("code");
+    code.textContent = "{post_content}";
+    hintEl.appendChild(code);
+    hintEl.appendChild(document.createTextNode(t("prompt_hint_after")));
   }
 }
 
