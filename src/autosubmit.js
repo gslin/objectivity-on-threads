@@ -1,9 +1,11 @@
 "use strict";
 
 // Auto-click the send button once the prompt is loaded from URL parameters.
-// Runs on chatgpt.com and claude.ai.
+// Only runs when the page was opened by this extension (hash marker present).
 
 (function () {
+  if (window.location.hash !== "#objectivity-auto") return;
+
   const SELECTORS = [
     'button[data-testid="send-button"]', // ChatGPT
     'button[aria-label="Send message"]', // Claude

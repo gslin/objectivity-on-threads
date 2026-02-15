@@ -156,10 +156,10 @@ function buildAnalysisUrl(postText, provider) {
 
   switch (provider) {
     case "claude":
-      return `https://claude.ai/new?q=${encoded}&incognito=true`;
+      return `https://claude.ai/new?q=${encoded}&incognito=true#objectivity-auto`;
     case "chatgpt":
     default:
-      return `https://chatgpt.com/?temporary-chat=true&q=${encoded}`;
+      return `https://chatgpt.com/?temporary-chat=true&q=${encoded}#objectivity-auto`;
   }
 }
 
