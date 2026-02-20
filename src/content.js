@@ -49,9 +49,11 @@ chrome.storage.onChanged.addListener((changes, area) => {
 function findMoreButton(postEl) {
   const svgs = postEl.querySelectorAll('svg[aria-label="More"]');
   for (const svg of svgs) {
-    // Post-level More buttons use three <circle> elements (cx=6,12,18)
-    // Nav-level More uses <rect> elements — skip those
-    if (svg.querySelectorAll("circle").length !== 3) continue;
+    // Nav-level More uses <rect> elements — skip those.
+    // Post-level More buttons use either:
+    //   - three <circle> elements (old style, cx=6,12,18)
+    //   - a single <path> element (new style, three dots as path)
+    if (svg.querySelectorAll("rect").length > 0) continue;
 
     // Walk up to the clickable role="button" with aria-haspopup="menu"
     const btn =

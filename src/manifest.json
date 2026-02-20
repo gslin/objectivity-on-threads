@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Objectivity on Threads",
-  "version": "0.2026.215.1",
+  "version": "0.2026.220.0",
   "description": "Analyze the objectivity of Threads posts using ChatGPT",
   "permissions": ["storage"],
   "background": {
