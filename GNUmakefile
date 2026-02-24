@@ -22,7 +22,7 @@ $(CHROME_ZIP): $(SRC_FILES)
 	mkdir -p $(CHROME_BUILD)/icons
 	cp src/background.js src/autosubmit.js src/content.js src/content.css src/options.html src/options.js src/options.css $(CHROME_BUILD)/
 	cp src/icons/*.svg $(CHROME_BUILD)/icons/
-	jq 'del(.browser_specific_settings) | .background = {"service_worker": "background.js"}' src/manifest.json > $(CHROME_BUILD)/manifest.json
+	jq 'del(.browser_specific_settings)' src/manifest.json > $(CHROME_BUILD)/manifest.json
 	cd $(CHROME_BUILD) && zip -r ../../$@ .
 
 $(FIREFOX_ZIP): $(SRC_FILES)
@@ -30,7 +30,7 @@ $(FIREFOX_ZIP): $(SRC_FILES)
 	mkdir -p $(FIREFOX_BUILD)/icons
 	cp src/background.js src/autosubmit.js src/content.js src/content.css src/options.html src/options.js src/options.css $(FIREFOX_BUILD)/
 	cp src/icons/*.svg $(FIREFOX_BUILD)/icons/
-	cp src/manifest.json $(FIREFOX_BUILD)/
+	jq '.background = {"scripts": [.background.service_worker]}' src/manifest.json > $(FIREFOX_BUILD)/manifest.json
 	cd $(FIREFOX_BUILD) && zip -r ../../$@ .
 
 clean:

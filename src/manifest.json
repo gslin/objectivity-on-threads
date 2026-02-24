@@ -1,11 +1,11 @@
 {
   "manifest_version": 3,
   "name": "Objectivity on Threads",
-  "version": "0.2026.220.0",
+  "version": "0.2026.224.0",
   "description": "Analyze the objectivity of Threads posts using ChatGPT",
   "permissions": ["storage"],
   "background": {
-    "scripts": ["background.js"]
+    "service_worker": "background.js"
   },
   "action": {},
   "options_ui": {
