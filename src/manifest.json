@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Objectivity on Threads",
-  "version": "0.2026.224.1",
+  "version": "0.2026.306.0",
   "description": "Analyze the objectivity of Threads posts using AI",
   "permissions": ["storage"],
   "background": {
