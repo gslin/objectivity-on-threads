@@ -2,7 +2,17 @@
 
 const BUTTON_MARKER = "data-objectivity-injected";
 
+const LANGUAGE_LABELS = {
+  en: "English",
+  "zh-TW": "繁體中文（台灣）",
+  "zh-HK": "繁體中文（香港）",
+  ja: "日本語",
+};
+
 const DEFAULT_PROMPT = `請搜尋網路上的資訊，詳細逐句分析從 Threads 上看到的以下內容。
+
+使用者語系：{user_language}
+請以相同語系、文法與慣用法回覆。
 
 \`\`\`
 {post_content}
@@ -14,9 +24,33 @@ const DEFAULT_ICON_ACTION = "menu";
 let currentPrompt = DEFAULT_PROMPT;
 let currentProvider = DEFAULT_PROVIDER;
 let currentIconAction = DEFAULT_ICON_ACTION;
+let currentUserLanguage = LANGUAGE_LABELS[getDetectedLanguage()] || "English";
+
+function getDetectedLanguage() {
+  const lang = navigator.language || "";
+  if (lang.startsWith("zh-TW") || lang === "zh-Hant-TW") return "zh-TW";
+  if (lang.startsWith("zh-HK") || lang === "zh-Hant-HK") return "zh-HK";
+  if (lang.startsWith("zh")) return "zh-TW";
+  if (lang.startsWith("ja")) return "ja";
+  return "en";
+}
+
+function resolveLanguage(setting) {
+  if (!setting || setting === "auto") return getDetectedLanguage();
+  return setting;
+}
+
+function getLanguageLabel(setting) {
+  const resolved = resolveLanguage(setting);
+  return LANGUAGE_LABELS[resolved] || LANGUAGE_LABELS[getDetectedLanguage()] || resolved;
+}
+
+function replacePlaceholder(text, placeholder, value) {
+  return text.split(placeholder).join(value);
+}
 
 // Load settings from storage
-chrome.storage.sync.get(["prompt", "provider", "iconAction"], (result) => {
+chrome.storage.sync.get(["prompt", "provider", "iconAction", "language"], (result) => {
   if (result.prompt) {
     currentPrompt = result.prompt;
   }
@@ -26,6 +60,7 @@ chrome.storage.sync.get(["prompt", "provider", "iconAction"], (result) => {
   if (result.iconAction) {
     currentIconAction = result.iconAction;
   }
+  currentUserLanguage = getLanguageLabel(result.language);
 });
 
 // Listen for setting changes in real time
@@ -39,6 +74,9 @@ chrome.storage.onChanged.addListener((changes, area) => {
     }
     if (changes.iconAction) {
       currentIconAction = changes.iconAction.newValue ?? DEFAULT_ICON_ACTION;
+    }
+    if (changes.language) {
+      currentUserLanguage = getLanguageLabel(changes.language.newValue);
     }
   }
 });
@@ -155,7 +193,11 @@ function createAnalysisButton() {
  * Build the analysis URL for a given provider.
  */
 function buildAnalysisUrl(postText, provider) {
-  const prompt = currentPrompt.replace("{post_content}", postText);
+  const prompt = replacePlaceholder(
+    replacePlaceholder(currentPrompt, "{post_content}", postText),
+    "{user_language}",
+    currentUserLanguage,
+  );
   const encoded = encodeURIComponent(prompt);
 
   switch (provider) {

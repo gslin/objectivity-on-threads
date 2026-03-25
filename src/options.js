@@ -13,7 +13,8 @@ const MESSAGES = {
     icon_action_direct: "Open default AI directly",
     prompt_label: "Analysis prompt",
     prompt_hint_before: "Use ",
-    prompt_hint_after: " as a placeholder for the post text.",
+    prompt_hint_between: " as a placeholder for the post text and ",
+    prompt_hint_after: " as a placeholder for the user's language.",
     save: "Save",
     reset: "Reset to default",
     saved: "Saved.",
@@ -29,7 +30,8 @@ const MESSAGES = {
     icon_action_direct: "直接開啟預設 AI",
     prompt_label: "分析提示詞",
     prompt_hint_before: "使用 ",
-    prompt_hint_after: " 作為貼文內容的佔位符。",
+    prompt_hint_between: " 作為貼文內容的佔位符，並使用 ",
+    prompt_hint_after: " 作為使用者語系的佔位符。",
     save: "儲存",
     reset: "恢復預設",
     saved: "已儲存。",
@@ -45,7 +47,8 @@ const MESSAGES = {
     icon_action_direct: "直接開啟預設 AI",
     prompt_label: "分析提示詞",
     prompt_hint_before: "使用 ",
-    prompt_hint_after: " 作為帖文內容嘅佔位符。",
+    prompt_hint_between: " 作為帖文內容嘅佔位符，並使用 ",
+    prompt_hint_after: " 作為使用者語系嘅佔位符。",
     save: "儲存",
     reset: "恢復預設",
     saved: "已儲存。",
@@ -61,7 +64,8 @@ const MESSAGES = {
     icon_action_direct: "デフォルトの AI を直接開く",
     prompt_label: "分析プロンプト",
     prompt_hint_before: "",
-    prompt_hint_after: " を投稿テキストのプレースホルダーとして使用します。",
+    prompt_hint_between: " を投稿テキストのプレースホルダーとして、",
+    prompt_hint_after: " をユーザーの言語のプレースホルダーとして使用します。",
     save: "保存",
     reset: "デフォルトに戻す",
     saved: "保存しました。",
@@ -96,9 +100,13 @@ function applyI18n() {
   if (hintEl) {
     hintEl.textContent = "";
     hintEl.appendChild(document.createTextNode(t("prompt_hint_before")));
-    const code = document.createElement("code");
-    code.textContent = "{post_content}";
-    hintEl.appendChild(code);
+    const postCode = document.createElement("code");
+    postCode.textContent = "{post_content}";
+    hintEl.appendChild(postCode);
+    hintEl.appendChild(document.createTextNode(t("prompt_hint_between")));
+    const languageCode = document.createElement("code");
+    languageCode.textContent = "{user_language}";
+    hintEl.appendChild(languageCode);
     hintEl.appendChild(document.createTextNode(t("prompt_hint_after")));
   }
 }
@@ -106,6 +114,9 @@ function applyI18n() {
 // --- Settings ---
 
 const DEFAULT_PROMPT = `請搜尋網路上的資訊，詳細逐句分析從 Threads 上看到的以下內容。
+
+使用者語系：{user_language}
+請以相同語系、文法與慣用法回覆。
 
 「{post_content}」`;
 
