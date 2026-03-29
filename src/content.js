@@ -105,6 +105,53 @@ function findMoreButton(postEl) {
 }
 
 /**
+ * Extract the author username from a post element.
+ * The username lives inside a span with translate="no".
+ */
+function extractAuthor(postEl) {
+  const span = postEl.querySelector('span[translate="no"]');
+  if (!span) return null;
+  return span.textContent.trim();
+}
+
+/**
+ * Get all post elements on the page, in DOM order.
+ */
+function getAllPostElements() {
+  const pressables = document.querySelectorAll(
+    'div[data-pressable-container="true"]',
+  );
+  return Array.from(pressables).map((p) => p.parentElement).filter(Boolean);
+}
+
+/**
+ * Extract combined text from a post and its consecutive same-author replies.
+ * Walks forward through sibling posts, collecting text as long as the author
+ * matches. Stops at the first post by a different author.
+ */
+function extractThreadText(postEl) {
+  const author = extractAuthor(postEl);
+  if (!author) return extractPostText(postEl);
+
+  const allPosts = getAllPostElements();
+  const idx = allPosts.indexOf(postEl);
+  if (idx === -1) return extractPostText(postEl);
+
+  const texts = [extractPostText(postEl)];
+
+  for (let i = idx + 1; i < allPosts.length; i++) {
+    const nextAuthor = extractAuthor(allPosts[i]);
+    if (nextAuthor !== author) break;
+    const text = extractPostText(allPosts[i]);
+    if (text && text.trim().length > 0) {
+      texts.push(text.trim());
+    }
+  }
+
+  return texts.join("\n\n");
+}
+
+/**
  * Extract the text content of a post.
  */
 function extractPostText(postEl) {
@@ -116,10 +163,13 @@ function extractPostText(postEl) {
       .filter((n) => !n.hasAttribute("translate"))
       .map((n) => n.textContent.trim())
       .filter((t) => t.length > 0)
-      // The "Translate" button is nested inside span[dir="auto"],
-      // so its text leaks into textContent — strip it from the end.
+      // Strip trailing thread numbering like "1/4", "2/4" first,
+      // then "Translate" — handles both "Translate 2/4" and bare "1/4".
+      .map((t) => t.replace(/\s*\d+\/\d+$/, "").trim())
       .map((t) => t.replace(/\s*Translate$/, "").trim())
-      .filter((t) => t.length > 0);
+      .filter((t) => t.length > 0)
+      // Drop leaked UI strings like "View activityView activity".
+      .filter((t) => !/^(View activity)+$/.test(t));
     // Filter out short items that are likely metadata (timestamps like "1h")
     const bodyTexts = texts.filter((t) => t.length > 3 || texts.length <= 2);
     if (bodyTexts.length > 0) {
@@ -282,7 +332,7 @@ function processPost(postEl) {
     e.preventDefault();
     e.stopPropagation();
 
-    const text = extractPostText(postEl);
+    const text = extractThreadText(postEl);
     if (!text || text.trim().length === 0) {
       console.warn("[Objectivity on Threads] Could not extract post text.");
       return;
