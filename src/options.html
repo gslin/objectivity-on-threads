@@ -1,66 +1,55 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-TW">
   <head>
     <meta charset="utf-8" />
-    <title>Objectivity on Threads - Settings</title>
+    <title>Objectivity on Threads - 設定</title>
     <link rel="stylesheet" href="options.css" />
   </head>
   <body>
     <div class="container">
       <div class="header">
         <h1>Objectivity on Threads</h1>
-        <select id="language">
-          <option value="auto" data-i18n="lang_auto">Auto-detect</option>
-          <option value="en">English</option>
-          <option value="zh-TW">繁體中文（台灣）</option>
-          <option value="zh-HK">繁體中文（香港）</option>
-          <option value="ja">日本語</option>
-        </select>
       </div>
 
       <fieldset id="provider-group">
-        <legend data-i18n="provider_legend">AI Provider</legend>
+        <legend>AI 提供者</legend>
         <label class="radio-label">
           <input type="radio" name="provider" value="chatgpt" />
-          <span data-i18n="provider_chatgpt">ChatGPT (temporary chat)</span>
+          <span>ChatGPT（暫時對話）</span>
         </label>
         <label class="radio-label">
           <input type="radio" name="provider" value="claude" />
-          <span data-i18n="provider_claude">Claude (incognito)</span>
+          <span>Claude（無痕模式）</span>
         </label>
       </fieldset>
 
       <fieldset id="icon-action-group">
-        <legend data-i18n="icon_action_legend">Analysis button behavior</legend>
+        <legend>分析按鈕行為</legend>
         <label class="radio-label">
           <input type="radio" name="iconAction" value="menu" />
-          <span data-i18n="icon_action_menu">Show menu to choose AI</span>
+          <span>顯示選單選擇 AI</span>
         </label>
         <label class="radio-label">
           <input type="radio" name="iconAction" value="direct" />
-          <span data-i18n="icon_action_direct"
-            >Open default AI directly</span
-          >
+          <span>直接開啟預設 AI</span>
         </label>
       </fieldset>
 
       <label for="prompt">
-        <span data-i18n="prompt_label">Analysis prompt</span>
+        <span>分析提示詞</span>
         <span class="hint" id="prompt-hint"
-          >Use <code>{post_content}</code> as a placeholder for the post text
-          and <code>{user_language}</code> for the user's language.</span
+          >使用 <code>{post_content}</code> 作為貼文內容的佔位符，並使用
+          <code>{user_language}</code> 作為使用者語系的佔位符。</span
         >
       </label>
       <textarea id="prompt" rows="10"></textarea>
 
       <div class="actions">
-        <button id="save" type="button" data-i18n="save">Save</button>
-        <button id="reset" type="button" class="secondary" data-i18n="reset">
-          Reset to default
-        </button>
+        <button id="save" type="button">儲存</button>
+        <button id="reset" type="button" class="secondary">恢復預設</button>
       </div>
 
-      <div id="status" class="status" hidden>Saved.</div>
+      <div id="status" class="status" hidden></div>
     </div>
 
     <script src="options.js"></script>
