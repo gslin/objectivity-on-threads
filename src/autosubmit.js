@@ -35,22 +35,20 @@
 
   /**
    * Insert text into a ProseMirror / Tiptap contenteditable element.
-   * Converts newlines to <p> elements and uses insertHTML so
-   * ProseMirror parses them into proper paragraph nodes.
+   * Uses insertText + insertParagraph line by line so the content
+   * stays as plain text and avoids HTML/markdown interpretation.
    */
   function insertText(element, text) {
     element.focus();
-    const html = text
-      .split("\n")
-      .map((line) => {
-        const escaped = line
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;");
-        return "<p>" + (escaped || "<br>") + "</p>";
-      })
-      .join("");
-    document.execCommand("insertHTML", false, html);
+    const lines = text.split("\n");
+    for (let i = 0; i < lines.length; i++) {
+      if (i > 0) {
+        document.execCommand("insertParagraph", false, null);
+      }
+      if (lines[i]) {
+        document.execCommand("insertText", false, lines[i]);
+      }
+    }
   }
 
   chrome.storage.local.get("objectivityPrompt", (result) => {
