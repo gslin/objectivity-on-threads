@@ -242,29 +242,33 @@ function createAnalysisButton() {
 /**
  * Build the analysis URL for a given provider.
  */
-function buildAnalysisUrl(postText, provider) {
-  const prompt = replacePlaceholder(
-    replacePlaceholder(currentPrompt, "{post_content}", postText),
-    "{user_language}",
-    currentUserLanguage,
-  );
-  const encoded = encodeURIComponent(prompt);
-
+function buildAnalysisUrl(provider) {
   switch (provider) {
     case "claude":
-      return `https://claude.ai/new?q=${encoded}&incognito=true#objectivity-auto`;
+      return "https://claude.ai/new?incognito=true#objectivity-auto";
     case "chatgpt":
     default:
-      return `https://chatgpt.com/?temporary-chat=true&q=${encoded}#objectivity-auto`;
+      return "https://chatgpt.com/?temporary-chat=true#objectivity-auto";
   }
 }
 
 /**
  * Open an AI provider with the analysis prompt.
+ * Stores the prompt in chrome.storage.local so autosubmit.js can
+ * inject it into the editor — avoids URL length limits.
  */
 function openAnalysis(postText, provider) {
-  const url = buildAnalysisUrl(postText, provider);
-  window.open(url, "_blank");
+  const prompt = replacePlaceholder(
+    replacePlaceholder(currentPrompt, "{post_content}", postText),
+    "{user_language}",
+    currentUserLanguage,
+  );
+  // Wait for storage write to complete before opening the new tab,
+  // so autosubmit.js is guaranteed to find the prompt.
+  chrome.storage.local.set({ objectivityPrompt: prompt }, () => {
+    const url = buildAnalysisUrl(provider);
+    window.open(url, "_blank");
+  });
 }
 
 /**
