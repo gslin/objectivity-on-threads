@@ -2,11 +2,9 @@
 
 const BUTTON_MARKER = "data-objectivity-injected";
 
-const USER_LANGUAGE = "繁體中文（台灣）";
+const PROMPT = `請搜尋網路上的資訊，詳細逐句分析從 Threads 上看到的以下內容，並附上參考連結。
 
-const DEFAULT_PROMPT = `請搜尋網路上的資訊，詳細逐句分析從 Threads 上看到的以下內容，並附上參考連結。
-
-使用者語系：{user_language}
+使用者語系：繁體中文（台灣）
 請以相同語系、文法與慣用法回覆。
 
 \`\`\`
@@ -16,19 +14,11 @@ const DEFAULT_PROMPT = `請搜尋網路上的資訊，詳細逐句分析從 Thre
 const DEFAULT_PROVIDER = "chatgpt";
 const DEFAULT_ICON_ACTION = "menu";
 
-let currentPrompt = DEFAULT_PROMPT;
 let currentProvider = DEFAULT_PROVIDER;
 let currentIconAction = DEFAULT_ICON_ACTION;
 
-function replacePlaceholder(text, placeholder, value) {
-  return text.split(placeholder).join(value);
-}
-
 // Load settings from storage
-chrome.storage.sync.get(["prompt", "provider", "iconAction"], (result) => {
-  if (result.prompt) {
-    currentPrompt = result.prompt;
-  }
+chrome.storage.sync.get(["provider", "iconAction"], (result) => {
   if (result.provider) {
     currentProvider = result.provider;
   }
@@ -40,9 +30,6 @@ chrome.storage.sync.get(["prompt", "provider", "iconAction"], (result) => {
 // Listen for setting changes in real time
 chrome.storage.onChanged.addListener((changes, area) => {
   if (area === "sync") {
-    if (changes.prompt) {
-      currentPrompt = changes.prompt.newValue ?? DEFAULT_PROMPT;
-    }
     if (changes.provider) {
       currentProvider = changes.provider.newValue ?? DEFAULT_PROVIDER;
     }
@@ -233,11 +220,7 @@ function buildAnalysisUrl(provider) {
  * inject it into the editor — avoids URL length limits.
  */
 function openAnalysis(postText, provider) {
-  const prompt = replacePlaceholder(
-    replacePlaceholder(currentPrompt, "{post_content}", postText),
-    "{user_language}",
-    USER_LANGUAGE,
-  );
+  const prompt = PROMPT.replace("{post_content}", postText);
   // Wait for storage write to complete before opening the new tab,
   // so autosubmit.js is guaranteed to find the prompt.
   chrome.storage.local.set({ objectivityPrompt: prompt }, () => {
