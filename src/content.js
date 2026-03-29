@@ -140,7 +140,11 @@ function extractPostText(postEl) {
       .map((t) => t.replace(/\s*Translate$/, "").trim())
       .filter((t) => t.length > 0)
       // Drop leaked UI strings like "View activityView activity".
-      .filter((t) => !/^(View activity)+$/.test(t));
+      .filter((t) => !/^(View activity)+$/.test(t))
+      // Remove triple backticks so they don't break the ``` wrapper
+      // in the prompt template.
+      .map((t) => t.replace(/```/g, "").trim())
+      .filter((t) => t.length > 0);
     // Filter out short items that are likely metadata (timestamps like "1h")
     const bodyTexts = texts.filter((t) => t.length > 3 || texts.length <= 2);
     if (bodyTexts.length > 0) {
