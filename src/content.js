@@ -9,7 +9,7 @@ const LANGUAGE_LABELS = {
   ja: "日本語",
 };
 
-const DEFAULT_PROMPT = `請搜尋網路上的資訊，詳細逐句分析從 Threads 上看到的以下內容。
+const DEFAULT_PROMPT = `請搜尋網路上的資訊，詳細逐句分析從 Threads 上看到的以下內容，並附上參考連結。
 
 使用者語系：{user_language}
 請以相同語系、文法與慣用法回覆。
