@@ -2,7 +2,7 @@
 
 const BUTTON_MARKER = "data-objectivity-injected";
 
-const PROMPT = `請搜尋網路上的資訊，詳細逐句分析從 Threads 上看到的以下內容，並附上參考連結。
+const PROMPT = `以下的內容是 Threads 上看到的貼文，請搜尋網路上的資訊，詳細逐句分析正確性與邏輯性，並附上參考連結。
 
 使用者語系：繁體中文（台灣）
 請以相同語系、文法與慣用法回覆。
