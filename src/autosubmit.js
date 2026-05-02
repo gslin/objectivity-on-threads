@@ -10,11 +10,13 @@
   const INPUT_SELECTORS = [
     "#prompt-textarea", // ChatGPT (ProseMirror contenteditable)
     '[data-testid="chat-input"]', // Claude (Tiptap contenteditable)
+    "#ask-input", // Perplexity (Lexical contenteditable)
   ];
 
   const SEND_SELECTORS = [
     'button[data-testid="send-button"]', // ChatGPT
     'button[aria-label="Send message"]', // Claude
+    'button[aria-label="Submit"]', // Perplexity
   ];
 
   function findInput() {
@@ -34,9 +36,10 @@
   }
 
   /**
-   * Insert text into a ProseMirror / Tiptap contenteditable element.
-   * Uses insertText + insertParagraph line by line so the content
-   * stays as plain text and avoids HTML/markdown interpretation.
+   * Insert text into a ProseMirror / Tiptap / Lexical contenteditable element.
+   * execCommand triggers a trusted beforeinput event that all three editors
+   * accept. insertText + insertParagraph keeps content as plain text and
+   * avoids HTML/markdown interpretation.
    */
   function insertText(element, text) {
     element.focus();
@@ -58,6 +61,7 @@
     // Clear storage immediately — the prompt is held in the local variable.
     chrome.storage.local.remove("objectivityPrompt");
 
+    let incognitoToggled = false;
     let textInserted = false;
     let done = false;
 
@@ -66,10 +70,26 @@
 
       if (!textInserted) {
         const input = findInput();
-        if (input) {
-          insertText(input, prompt);
-          textInserted = true;
+        if (!input) return;
+
+        // Perplexity-specific: once the editor is rendered, check whether
+        // the page is in incognito mode. If not, click the toggle and
+        // wait for re-render before inserting text. The selector is
+        // Perplexity-only — no-op for ChatGPT/Claude.
+        if (!incognitoToggled) {
+          const incognitoBtn = document.querySelector(
+            'button[aria-label^="Use incognito"]',
+          );
+          if (incognitoBtn) {
+            incognitoBtn.click();
+            incognitoToggled = true;
+            return;
+          }
+          incognitoToggled = true;
         }
+
+        insertText(input, prompt);
+        textInserted = true;
       }
 
       if (textInserted) {

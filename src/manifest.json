@@ -22,7 +22,8 @@
     {
       "matches": [
         "*://chatgpt.com/*",
-        "*://claude.ai/*"
+        "*://claude.ai/*",
+        "*://www.perplexity.ai/*"
       ],
       "js": ["autosubmit.js"],
       "run_at": "document_idle"

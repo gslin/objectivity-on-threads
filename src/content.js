@@ -208,6 +208,8 @@ function buildAnalysisUrl(provider) {
   switch (provider) {
     case "claude":
       return "https://claude.ai/new?incognito=true#objectivity-auto";
+    case "perplexity":
+      return "https://www.perplexity.ai/#objectivity-auto";
     case "chatgpt":
     default:
       return "https://chatgpt.com/?temporary-chat=true#objectivity-auto";
@@ -249,6 +251,7 @@ function showDropdown(anchorEl, postText) {
   const items = [
     { label: "ChatGPT", provider: "chatgpt" },
     { label: "Claude", provider: "claude" },
+    { label: "Perplexity", provider: "perplexity" },
   ];
 
   for (const item of items) {
