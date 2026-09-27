@@ -130,34 +130,58 @@ function extractThreadText(postEl) {
  * Extract the text content of a post.
  */
 function extractPostText(postEl) {
-  // Threads post text lives inside span[dir="auto"] elements.
-  const allSpans = postEl.querySelectorAll('span[dir="auto"]');
-  if (allSpans.length > 0) {
-    const texts = Array.from(allSpans)
-      // Skip username spans (they have translate="no")
-      .filter((n) => !n.hasAttribute("translate"))
-      .map((n) => n.textContent.trim())
-      .filter((t) => t.length > 0)
-      // Strip trailing thread numbering like "1/4", "2/4" first,
-      // then "Translate" — handles both "Translate 2/4" and bare "1/4".
-      .map((t) => t.replace(/\s*\d+\/\d+$/, "").trim())
-      .map((t) => t.replace(/\s*Translate$/, "").trim())
-      .filter((t) => t.length > 0)
-      // Drop leaked UI strings like "View activityView activity".
-      .filter((t) => !/^(View activity)+$/.test(t))
-      // Remove triple backticks so they don't break the ``` wrapper
-      // in the prompt template.
-      .map((t) => t.replace(/```/g, "").trim())
-      .filter((t) => t.length > 0);
-    // Filter out short items that are likely metadata (timestamps like "1h")
-    const bodyTexts = texts.filter((t) => t.length > 3 || texts.length <= 2);
-    if (bodyTexts.length > 0) {
-      return bodyTexts.join("\n");
+  const paragraphSelector = 'span[dir="auto"], h1[dir="auto"], h2[dir="auto"]';
+  const texts = [];
+
+  for (const paragraph of postEl.querySelectorAll(paragraphSelector)) {
+    // Exclude author names, timestamps, and text inside UI links or buttons.
+    const control = paragraph.closest(
+      'a, button, [role="button"], [role="link"]',
+    );
+    if (
+      paragraph.hasAttribute("translate") ||
+      paragraph.querySelector("time") ||
+      (control && postEl.contains(control))
+    ) {
+      continue;
     }
+
+    // Nested text is already included in its enclosing paragraph.
+    const parentParagraph = paragraph.parentElement.closest(paragraphSelector);
+    if (parentParagraph && postEl.contains(parentParagraph)) continue;
+
+    const content = paragraph.cloneNode(true);
+    for (const button of content.querySelectorAll('button, [role="button"]')) {
+      // Spoiler reveal buttons contain authored text, unlike translation UI.
+      if (!button.querySelector('[data-text-fragment="spoiler"]')) {
+        button.remove();
+      }
+    }
+
+    // Inline thread counters have a number span, slash div, and number span.
+    // Remove the counter element so fractions in the actual post stay intact.
+    for (const counter of content.querySelectorAll("div")) {
+      const [position, separator, total] = counter.children;
+      if (
+        counter.children.length === 3 &&
+        position.matches("span") &&
+        separator.matches("div") &&
+        total.matches("span") &&
+        separator.textContent.trim() === "/" &&
+        /^\p{Decimal_Number}+$/u.test(position.textContent.trim()) &&
+        /^\p{Decimal_Number}+$/u.test(total.textContent.trim())
+      ) {
+        counter.remove();
+      }
+    }
+
+    for (const br of content.querySelectorAll("br")) br.replaceWith("\n");
+    // Keep the prompt's triple-backtick wrapper intact.
+    const text = content.textContent.replace(/```/g, "").trim();
+    if (text) texts.push(text);
   }
 
-  // Fallback to innerText of the post container
-  return postEl.innerText.substring(0, 2000);
+  return texts.join("\n");
 }
 
 /**
