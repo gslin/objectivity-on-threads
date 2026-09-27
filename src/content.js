@@ -386,7 +386,7 @@ scanAndInject();
 const observer = new MutationObserver((mutations) => {
   let shouldScan = false;
   for (const mutation of mutations) {
-    if (mutation.addedNodes.length > 0) {
+    if (mutation.type === "attributes" || mutation.addedNodes.length > 0) {
       shouldScan = true;
       break;
     }
@@ -397,6 +397,9 @@ const observer = new MutationObserver((mutations) => {
 });
 
 observer.observe(document.body, {
+  // Threads adds this attribute in an effect after inserting the post DOM.
+  attributes: true,
+  attributeFilter: ["data-pressable-container"],
   childList: true,
   subtree: true,
 });
