@@ -1,8 +1,18 @@
 # Objectivity on Threads
 
-一款瀏覽器擴充套件，在每則 [Threads](https://www.threads.com/) 貼文旁加入分析按鈕，將貼文內容送到 AI（ChatGPT 或 Claude）進行事實查核。使用無痕（暫時對話）模式，避免 AI 受到先前對話記憶的影響，確保每次分析都是獨立且客觀的。
+一款瀏覽器擴充套件，在每則 [Threads](https://www.threads.com/) 貼文旁加入分析按鈕，將貼文內容送到 AI 服務進行事實查核。使用無痕（暫時對話）模式，避免 AI 受到先前對話記憶的影響，確保每次分析都是獨立且客觀的。
 
 本套件在開發過程中重度使用大型語言模型（LLM）輔助。
+
+## Supported AI services
+
+目前支援以下 AI 服務：
+
+* ChatGPT
+* Claude
+* Perplexity
+
+可透過分析按鈕的選單選擇 AI 服務，或在設定頁指定預設 AI，並將按鈕行為設為「直接開啟預設 AI」。
 
 ## Installation
 
