@@ -1,6 +1,9 @@
 "use strict";
 
 const BUTTON_MARKER = "data-objectivity-injected";
+const MORE_BUTTON_SELECTOR = ["More", "更多", "もっと見る", "더 보기"]
+  .map((label) => `svg[aria-label="${label}"], svg[title="${label}"]`)
+  .join(", ");
 
 const PROMPT = `以下的內容是 Threads 上看到的貼文，請搜尋網路上的資訊，詳細逐句分析正確性與邏輯性，並附上參考連結。
 
@@ -41,13 +44,13 @@ chrome.storage.onChanged.addListener((changes, area) => {
 
 /**
  * Find the post-level three-dot "More" button inside a post element.
- * Uses aria-label="More" on the SVG, then filters to post-level buttons
- * (which use <circle> elements, not <rect> like the nav hamburger menu).
+ * Supports aria-label and title in English, Traditional Chinese (TW/HK),
+ * Japanese, and Korean. Skips navigation icons containing <rect> elements.
  */
 function findMoreButton(postEl) {
-  const svgs = postEl.querySelectorAll('svg[aria-label="More"]');
+  const svgs = postEl.querySelectorAll(MORE_BUTTON_SELECTOR);
   for (const svg of svgs) {
-    // Nav-level More uses <rect> elements — skip those.
+    // Skip older navigation icons that use <rect> elements.
     // Post-level More buttons use either:
     //   - three <circle> elements (old style, cx=6,12,18)
     //   - a single <path> element (new style, three dots as path)
