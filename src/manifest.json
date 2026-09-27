@@ -4,7 +4,12 @@
   "version": "0.2026.928.4",
   "description": "Analyze the objectivity of Threads posts using AI",
   "permissions": ["storage"],
-  "optional_host_permissions": ["*://www.threads.com/*"],
+  "optional_host_permissions": [
+    "*://www.threads.com/*",
+    "*://chatgpt.com/*",
+    "*://claude.ai/*",
+    "*://www.perplexity.ai/*"
+  ],
   "background": {
     "service_worker": "background.js"
   },

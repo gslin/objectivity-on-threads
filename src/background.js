@@ -1,12 +1,14 @@
 "use strict";
 
-const THREADS_PERMISSIONS = { origins: ["*://www.threads.com/*"] };
+const SITE_PERMISSIONS = {
+  origins: chrome.runtime.getManifest().content_scripts.flatMap((script) => script.matches),
+};
 
 chrome.runtime.onInstalled.addListener((details) => {
   if (details.reason === "install") {
     chrome.runtime.openOptionsPage();
   } else if (details.reason === "update") {
-    chrome.permissions.contains(THREADS_PERMISSIONS, (granted) => {
+    chrome.permissions.contains(SITE_PERMISSIONS, (granted) => {
       const error = chrome.runtime.lastError;
       if (error) {
         console.warn(

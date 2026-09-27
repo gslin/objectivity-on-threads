@@ -87,17 +87,17 @@ button {
 }
 
 #save,
-#grant-threads {
+#grant-sites {
   background: #0066cc;
   color: #fff;
 }
 
 #save:hover,
-#grant-threads:hover {
+#grant-sites:hover {
   background: #0055aa;
 }
 
-#grant-threads {
+#grant-sites {
   margin-top: 12px;
 }
 

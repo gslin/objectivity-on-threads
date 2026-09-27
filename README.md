@@ -19,7 +19,7 @@
 * https://chromewebstore.google.com/detail/objectivity-on-threads/degfggbekbomcgecdkaekahlhdpmnndc
 * https://addons.mozilla.org/en-US/firefox/addon/objectivity-on-threads/
 
-安裝後會自動開啟設定頁。若顯示尚未授權，請按「授權 Threads」並在瀏覽器提示中允許存取，再重新整理 Threads 頁面。之後也可以點擊擴充套件圖示，開啟設定頁確認或補上權限。
+安裝後會自動開啟設定頁，檢查 Threads、ChatGPT、Claude 與 Perplexity 的存取權限。若權限不足，請按「授權網站存取」並在瀏覽器提示中允許存取，再重新整理 Threads 與已開啟的 AI 網站頁面。更新後若缺少任一網站的權限，也會自動開啟設定頁；之後也可以點擊擴充套件圖示，確認或補上權限。
 
 ## Deployment
 

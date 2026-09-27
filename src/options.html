@@ -12,12 +12,15 @@
       </div>
 
       <fieldset>
-        <legend>Threads 存取權限</legend>
-        <p>授權後，擴充套件才能在 Threads 貼文旁顯示分析按鈕。</p>
-        <p id="threads-permission-status" class="hint" role="status">
+        <legend>網站存取權限</legend>
+        <p>
+          擴充套件需要存取 Threads 才能顯示分析按鈕，並需要存取 ChatGPT、Claude
+          與 Perplexity 才能自動填入及送出分析內容。
+        </p>
+        <p id="site-permission-status" class="hint" role="status">
           正在檢查權限…
         </p>
-        <button id="grant-threads" type="button" disabled>授權 Threads</button>
+        <button id="grant-sites" type="button" disabled>授權網站存取</button>
       </fieldset>
 
       <fieldset id="provider-group">
