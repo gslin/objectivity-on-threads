@@ -11,12 +11,14 @@
 
   const INPUT_SELECTORS = [
     "#prompt-textarea", // ChatGPT (ProseMirror contenteditable)
+    'form[data-chatgpt-composer] [data-composer-markdown][contenteditable="true"]',
     '[data-testid="chat-input"]', // Claude (Tiptap contenteditable)
     "#ask-input", // Perplexity (Lexical contenteditable)
   ];
 
   const SEND_SELECTORS = [
     'button[data-testid="send-button"]', // ChatGPT
+    'form[data-chatgpt-composer] button[type="submit"]',
     'button[aria-label="Send message"]', // Claude
     'button[aria-label="Submit"]', // Perplexity
   ];
@@ -32,26 +34,28 @@
   function findSendButton() {
     for (const sel of SEND_SELECTORS) {
       const btn = document.querySelector(sel);
-      if (btn && !btn.disabled) return btn;
+      if (btn && !btn.disabled && btn.getAttribute("aria-disabled") !== "true") {
+        return btn;
+      }
     }
     return null;
   }
 
   /**
    * Insert text into a ProseMirror / Tiptap / Lexical contenteditable element.
-   * Lexical handles plain-text paste through its editor state. The other
+   * Lexical handles replacement input through its editor state. The other
    * editors use insertText + insertParagraph to preserve plain text.
    */
   function insertText(element, text) {
     element.focus();
     if (isPerplexity) {
-      const event = new ClipboardEvent("paste", {
+      // Firefox hides content-script clipboard data from page listeners.
+      const event = new InputEvent("beforeinput", {
         bubbles: true,
         cancelable: true,
-        clipboardData: new DataTransfer(),
+        inputType: "insertReplacementText",
+        data: text,
       });
-      // Firefox creates its own DataTransfer for the event.
-      event.clipboardData.setData("text/plain", text);
       element.dispatchEvent(event);
       return;
     }
@@ -101,7 +105,7 @@
       const input = findInput();
       if (!input || !input.isContentEditable) return;
 
-      // A paste can be ignored before Lexical is ready, or a re-render can
+      // Input can be ignored before Lexical is ready, or a re-render can
       // replace the editor. Retry if the current editor is still empty.
       if (!textInserted || (isPerplexity && !input.textContent.trim())) {
         insertText(input, prompt);
