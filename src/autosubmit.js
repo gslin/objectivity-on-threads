@@ -7,6 +7,8 @@
 (function () {
   if (window.location.hash !== "#objectivity-auto") return;
 
+  const isPerplexity = window.location.hostname === "www.perplexity.ai";
+
   const INPUT_SELECTORS = [
     "#prompt-textarea", // ChatGPT (ProseMirror contenteditable)
     '[data-testid="chat-input"]', // Claude (Tiptap contenteditable)
@@ -37,12 +39,23 @@
 
   /**
    * Insert text into a ProseMirror / Tiptap / Lexical contenteditable element.
-   * execCommand triggers a trusted beforeinput event that all three editors
-   * accept. insertText + insertParagraph keeps content as plain text and
-   * avoids HTML/markdown interpretation.
+   * Lexical handles plain-text paste through its editor state. The other
+   * editors use insertText + insertParagraph to preserve plain text.
    */
   function insertText(element, text) {
     element.focus();
+    if (isPerplexity) {
+      const event = new ClipboardEvent("paste", {
+        bubbles: true,
+        cancelable: true,
+        clipboardData: new DataTransfer(),
+      });
+      // Firefox creates its own DataTransfer for the event.
+      event.clipboardData.setData("text/plain", text);
+      element.dispatchEvent(event);
+      return;
+    }
+
     const lines = text.split("\n");
     for (let i = 0; i < lines.length; i++) {
       if (i > 0) {
@@ -61,35 +74,40 @@
     // Clear storage immediately — the prompt is held in the local variable.
     chrome.storage.local.remove("objectivityPrompt");
 
-    let incognitoToggled = false;
+    let incognitoRequested = false;
     let textInserted = false;
     let done = false;
 
     function tryProcess() {
       if (done) return;
 
-      if (!textInserted) {
-        const input = findInput();
-        if (!input) return;
-
-        // Perplexity-specific: once the editor is rendered, check whether
-        // the page is in incognito mode. If not, click the toggle and
-        // wait for re-render before inserting text. The selector is
-        // Perplexity-only — no-op for ChatGPT/Claude.
-        if (!incognitoToggled) {
+      // Wait for an explicit incognito state before inserting or sending.
+      if (
+        isPerplexity &&
+        !document.querySelector('button[aria-label="Exit incognito"]')
+      ) {
+        if (!incognitoRequested) {
           const incognitoBtn = document.querySelector(
             'button[aria-label^="Use incognito"]',
           );
-          if (incognitoBtn) {
+          if (incognitoBtn && !incognitoBtn.disabled) {
+            incognitoRequested = true;
             incognitoBtn.click();
-            incognitoToggled = true;
-            return;
           }
-          incognitoToggled = true;
         }
+        return;
+      }
 
+      const input = findInput();
+      if (!input || !input.isContentEditable) return;
+
+      // A paste can be ignored before Lexical is ready, or a re-render can
+      // replace the editor. Retry if the current editor is still empty.
+      if (!textInserted || (isPerplexity && !input.textContent.trim())) {
         insertText(input, prompt);
         textInserted = true;
+        // Let Lexical and the submit button update before checking again.
+        if (isPerplexity) return;
       }
 
       if (textInserted) {
