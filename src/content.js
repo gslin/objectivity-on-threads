@@ -1,9 +1,12 @@
 "use strict";
 
 const BUTTON_MARKER = "data-objectivity-injected";
-const MORE_BUTTON_SELECTOR = ["More", "更多", "もっと見る", "더 보기"]
-  .map((label) => `svg[aria-label="${label}"], svg[title="${label}"]`)
-  .join(", ");
+const MORE_ICON_PATHS = new Set([
+  // ThreadsEllipsisOutline24Icon
+  "M4 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm10-2a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm8 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0z",
+  // BarcelonaMoreHorizontalIcon
+  "M2 7.25a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5Zm4 0a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5Zm4 0a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5Z",
+]);
 
 const PROMPT = `以下的內容是 Threads 上看到的貼文，請搜尋網路上的資訊，詳細逐句分析正確性與邏輯性，並附上參考連結。
 
@@ -44,23 +47,34 @@ chrome.storage.onChanged.addListener((changes, area) => {
 
 /**
  * Find the post-level three-dot "More" button inside a post element.
- * Supports aria-label and title in English, Traditional Chinese (TW/HK),
- * Japanese, and Korean. Skips navigation icons containing <rect> elements.
+ * Match the icon geometry so translated or missing labels do not matter.
  */
 function findMoreButton(postEl) {
-  const svgs = postEl.querySelectorAll(MORE_BUTTON_SELECTOR);
+  const svgs = postEl.querySelectorAll("svg");
   for (const svg of svgs) {
-    // Skip older navigation icons that use <rect> elements.
-    // Post-level More buttons use either:
-    //   - three <circle> elements (old style, cx=6,12,18)
-    //   - a single <path> element (new style, three dots as path)
-    if (svg.querySelectorAll("rect").length > 0) continue;
+    if (svg.querySelector("rect")) continue;
+
+    const paths = svg.querySelectorAll("path");
+    const circles = Array.from(svg.querySelectorAll("circle"));
+    const hasMorePath =
+      paths.length === 1 && MORE_ICON_PATHS.has(paths[0].getAttribute("d"));
+    // Older icons use three equally sized circles in a horizontal row.
+    const hasMoreCircles =
+      paths.length === 0 &&
+      circles.length === 3 &&
+      new Set(circles.map((circle) => circle.getAttribute("cx"))).size === 3 &&
+      circles.every(
+        (circle) =>
+          circle.getAttribute("cy") === circles[0].getAttribute("cy") &&
+          circle.getAttribute("r") === circles[0].getAttribute("r"),
+      );
+    if (!hasMorePath && !hasMoreCircles) continue;
 
     // Walk up to the clickable role="button" with aria-haspopup="menu"
     const btn =
       svg.closest('[role="button"][aria-haspopup="menu"]') ||
       svg.closest('[role="button"]');
-    if (btn) return btn;
+    if (btn && postEl.contains(btn)) return btn;
   }
   return null;
 }
