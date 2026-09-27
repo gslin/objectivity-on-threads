@@ -86,13 +86,19 @@ button {
   font-weight: 500;
 }
 
-#save {
+#save,
+#grant-threads {
   background: #0066cc;
   color: #fff;
 }
 
-#save:hover {
+#save:hover,
+#grant-threads:hover {
   background: #0055aa;
+}
+
+#grant-threads {
+  margin-top: 12px;
 }
 
 .secondary {

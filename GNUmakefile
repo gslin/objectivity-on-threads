@@ -30,7 +30,8 @@ $(FIREFOX_ZIP): $(SRC_FILES)
 	mkdir -p $(FIREFOX_BUILD)/icons
 	cp src/background.js src/autosubmit.js src/content.js src/content.css src/options.html src/options.js src/options.css $(FIREFOX_BUILD)/
 	cp src/icons/*.png $(FIREFOX_BUILD)/icons/
-	jq '.background = {"scripts": [.background.service_worker]}' src/manifest.json > $(FIREFOX_BUILD)/manifest.json
+	# Firefox 109-127 reads optional hosts from optional_permissions.
+	jq '.background = {"scripts": [.background.service_worker]} | .optional_permissions = .optional_host_permissions | del(.optional_host_permissions)' src/manifest.json > $(FIREFOX_BUILD)/manifest.json
 	cd $(FIREFOX_BUILD) && zip -r ../../$@ .
 
 clean:

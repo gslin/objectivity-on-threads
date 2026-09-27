@@ -4,6 +4,7 @@
   "version": "0.2026.928.2",
   "description": "Analyze the objectivity of Threads posts using AI",
   "permissions": ["storage"],
+  "optional_host_permissions": ["*://www.threads.com/*"],
   "background": {
     "service_worker": "background.js"
   },

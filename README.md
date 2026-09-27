@@ -7,6 +7,8 @@
 * https://chromewebstore.google.com/detail/objectivity-on-threads/degfggbekbomcgecdkaekahlhdpmnndc
 * https://addons.mozilla.org/en-US/firefox/addon/objectivity-on-threads/
 
+安裝後會自動開啟設定頁。若顯示尚未授權，請按「授權 Threads」並在瀏覽器提示中允許存取，再重新整理 Threads 頁面。之後也可以點擊擴充套件圖示，開啟設定頁確認或補上權限。
+
 ## License
 
 [MIT](LICENSE)
