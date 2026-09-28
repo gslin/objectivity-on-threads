@@ -8,20 +8,37 @@
   if (window.location.hash !== "#objectivity-auto") return;
 
   const isPerplexity = window.location.hostname === "www.perplexity.ai";
+  const isGemini = window.location.hostname === "gemini.google.com";
+  const privateMode = isPerplexity
+    ? {
+        active: 'button[aria-label="Exit incognito"]',
+        toggle: 'button[aria-label^="Use incognito"]',
+      }
+    : isGemini
+      ? {
+          active: "chat-window.is-temporary-chat",
+          toggle: "temp-chat-button button",
+        }
+      : null;
 
   const INPUT_SELECTORS = [
     "#prompt-textarea", // ChatGPT (ProseMirror contenteditable)
     'form[data-chatgpt-composer] [data-composer-markdown][contenteditable="true"]',
     '[data-testid="chat-input"]', // Claude (Tiptap contenteditable)
     "#ask-input", // Perplexity (Lexical contenteditable)
+    'rich-textarea .ql-editor[contenteditable="true"]', // Gemini (Quill)
   ];
 
-  const SEND_SELECTORS = [
-    'button[data-testid="send-button"]', // ChatGPT
-    'form[data-chatgpt-composer] button[type="submit"]',
-    'button[aria-label="Send message"]', // Claude
-    'button[aria-label="Submit"]', // Perplexity
-  ];
+  // Gemini places the submit state and aria-disabled on the custom button
+  // wrapper in its current UI, or on the native button in the alternate UI.
+  const SEND_SELECTORS = isGemini
+    ? ["input-area-v2 .send-button.submit"]
+    : [
+        'button[data-testid="send-button"]', // ChatGPT
+        'form[data-chatgpt-composer] button[type="submit"]',
+        'button[aria-label="Send message"]', // Claude
+        'button[aria-label="Submit"]', // Perplexity
+      ];
 
   function findInput() {
     for (const sel of INPUT_SELECTORS) {
@@ -42,7 +59,7 @@
   }
 
   /**
-   * Insert text into a ProseMirror / Tiptap / Lexical contenteditable element.
+   * Insert text into a ProseMirror / Tiptap / Lexical / Quill editor.
    * Lexical handles replacement input through its editor state. The other
    * editors use insertText + insertParagraph to preserve plain text.
    */
@@ -78,25 +95,24 @@
     // Clear storage immediately — the prompt is held in the local variable.
     chrome.storage.local.remove("objectivityPrompt");
 
-    let incognitoRequested = false;
+    let privateModeRequested = false;
     let textInserted = false;
     let done = false;
 
     function tryProcess() {
       if (done) return;
 
-      // Wait for an explicit incognito state before inserting or sending.
-      if (
-        isPerplexity &&
-        !document.querySelector('button[aria-label="Exit incognito"]')
-      ) {
-        if (!incognitoRequested) {
-          const incognitoBtn = document.querySelector(
-            'button[aria-label^="Use incognito"]',
-          );
-          if (incognitoBtn && !incognitoBtn.disabled) {
-            incognitoRequested = true;
-            incognitoBtn.click();
+      // Wait for an explicit private chat state before inserting or sending.
+      if (privateMode && !document.querySelector(privateMode.active)) {
+        if (!privateModeRequested) {
+          const toggle = document.querySelector(privateMode.toggle);
+          if (
+            toggle &&
+            !toggle.disabled &&
+            toggle.getAttribute("aria-disabled") !== "true"
+          ) {
+            privateModeRequested = true;
+            toggle.click();
           }
         }
         return;
@@ -105,13 +121,13 @@
       const input = findInput();
       if (!input || !input.isContentEditable) return;
 
-      // Input can be ignored before Lexical is ready, or a re-render can
+      // Input can be ignored before the editor is ready, or a re-render can
       // replace the editor. Retry if the current editor is still empty.
-      if (!textInserted || (isPerplexity && !input.textContent.trim())) {
+      if (!textInserted || (privateMode && !input.textContent.trim())) {
         insertText(input, prompt);
         textInserted = true;
-        // Let Lexical and the submit button update before checking again.
-        if (isPerplexity) return;
+        // Let the editor and the submit button update before checking again.
+        if (privateMode) return;
       }
 
       if (textInserted) {

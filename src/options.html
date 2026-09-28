@@ -14,8 +14,8 @@
       <fieldset>
         <legend>網站存取權限</legend>
         <p>
-          擴充套件需要存取 Threads 才能顯示分析按鈕，並需要存取 ChatGPT、Claude
-          與 Perplexity 才能自動填入及送出分析內容。
+          擴充套件需要存取 Threads 才能顯示分析按鈕，並需要存取 ChatGPT、Claude、Perplexity
+          與 Gemini 才能自動填入及送出分析內容。
         </p>
         <p id="site-permission-status" class="hint" role="status">
           正在檢查權限…
@@ -36,6 +36,10 @@
         <label class="radio-label">
           <input type="radio" name="provider" value="perplexity" />
           <span>Perplexity（無痕模式）</span>
+        </label>
+        <label class="radio-label">
+          <input type="radio" name="provider" value="gemini" />
+          <span>Gemini（暫時對話）</span>
         </label>
       </fieldset>
 

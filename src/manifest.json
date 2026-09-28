@@ -8,7 +8,8 @@
     "*://www.threads.com/*",
     "*://chatgpt.com/*",
     "*://claude.ai/*",
-    "*://www.perplexity.ai/*"
+    "*://www.perplexity.ai/*",
+    "*://gemini.google.com/*"
   ],
   "background": {
     "service_worker": "background.js"
@@ -29,7 +30,8 @@
       "matches": [
         "*://chatgpt.com/*",
         "*://claude.ai/*",
-        "*://www.perplexity.ai/*"
+        "*://www.perplexity.ai/*",
+        "*://gemini.google.com/*"
       ],
       "js": ["autosubmit.js"],
       "run_at": "document_idle"
